@@ -7,7 +7,7 @@ http://sandy4blogs.blogspot.in/2014/02/a-wrapper-over-linode-python-api.html
 
 Content /data/linode/linode.properties
 [DEFAULT]
-UBUNTU_DIST=Ubuntu 12.04
+<br>UBUNTU_DIST=Ubuntu 12.04</br>
 KERNEL_LABEL=Latest 64 bit
 DATACENTER_LABEL=Dallas
 PLAN_ID=1024
