@@ -39,7 +39,7 @@ class Linode(object):
         self.rootDiskId=[d['DISKID'] for d in  self.linode.linode_disk_list(LinodeID=self.linodeId) if ('Root Partition' in d['LABEL'])]
         if not self.rootDiskId:
             print "Root disk doesn't exists creating 20 GB of it"
-            self.disk=self.linode.linode_disk_createfromdistribution(LinodeID=self.linodeId, DistributionID=self.distributionId, Label='Root Partition', Size=(20480), rootPass='root$1234',rootSSHKey=open(self.config.get('DEFAULT','ROOT_SSH_KEY')).read())
+            self.disk=self.linode.linode_disk_createfromdistribution(LinodeID=self.linodeId, DistributionID=self.distributionId, Label='Root Partition', Size=(self.config.getint('DEFAULT', 'ROOT_DISK_SIZE')), rootPass=self.config.get('DEFAULT','ROOT_PWD'),rootSSHKey=open(self.config.get('DEFAULT','ROOT_SSH_KEY')).read())
             self.rootDiskId=self.disk['DiskID']
         print self.rootDiskId
     
@@ -47,7 +47,7 @@ class Linode(object):
         self.swapDiskId=[d['DISKID'] for d in  self.linode.linode_disk_list(LinodeID=self.linodeId) if ('Swap Partition' in d['LABEL'])]
         if not self.swapDiskId:
             print "Swap disk doesn't exists creating 2 GB of it"
-            self.disk=self.linode.linode_disk_create(LinodeID=self.linodeId, Label='Swap Partition', Type='swap', Size=2048)
+            self.disk=self.linode.linode_disk_create(LinodeID=self.linodeId, Label='Swap Partition', Type='swap', Size=self.config.getint('DEFAULT', 'SWAP_DISK_SIZE'))
             self.swapDiskId=self.disk['DiskID']
         print self.swapDiskId
         
@@ -59,9 +59,6 @@ class Linode(object):
             self.configId=self.config['ConfigID']
         print self.configId
     
-    def _bootLinode(self):
-        self.linode.linode_boot(self.linodeId)
-     
     def _addPrivateIp(self):
         self.pvtIpAddress=[i['IPADDRESS'] for i in  self.linode.linode_ip_list(LinodeID=self.linodeId) if (not i['ISPUBLIC'])]
         if not self.pvtIpAddress:
@@ -69,6 +66,9 @@ class Linode(object):
             self.pvtIpAddress=self.linode.linode_ip_addprivate(LinodeID=self.linodeId)
         print self.pvtIpAddress
             
+    def _bootLinode(self):
+        self.linode.linode_boot(self.linodeId)
+
     def create(self):
         self._createLinode()
         self._createRootDiskIfNotExist()
