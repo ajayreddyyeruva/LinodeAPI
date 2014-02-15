@@ -30,7 +30,9 @@ class Linode(object):
         self.linodeId=[l['LINODEID'] for l in  self.linode.linode_list() if (self.linodeIdentifier in l['LABEL'])]
         if not self.linodeId:
             print "Lindoe doesn't exists. Creating it"
-            self.linodeNode=self.linode.linode_create(DatacenterID=self.dallasDataCenterId, PlanID=self.planId, PaymentTerm=self.paymentTerm)
+            linodeNode=self.linode.linode_create(DatacenterID=self.dallasDataCenterId, PlanID=self.planId, PaymentTerm=self.paymentTerm)
+            self.linodeId=linodeNode['LinodeID']
+            self.linode.linode_update(LinodeID=self.linodeId, Label=self.linodeIdentifier,lpm_displayGroup=self.config.get('DEFAULT','LINODE_GROUP'))
             
             
         print self.linodeId
@@ -67,7 +69,10 @@ class Linode(object):
         print self.pvtIpAddress
             
     def _bootLinode(self):
-        self.linode.linode_boot(self.linodeId)
+        linodeNode=self.linode.linode_list(LinodeID=self.linodeId)
+        if not linodeNode['STATUS']:
+            print ("Linode is not running, so booting it up!")
+            self.linode.linode_boot(self.linodeId)
 
     def create(self):
         self._createLinode()
@@ -75,7 +80,7 @@ class Linode(object):
         self._createSwapDiskIfNotExist()
         self._createConfigIfNotExist()
         self._addPrivateIp()
-        #self._bootLinode()
+        self._bootLinode()
     
 if __name__ == "__main__":
     saLinode=Linode('bs1_monimus_org')
