@@ -80,7 +80,7 @@ class Linode(object):
             
     def _bootLinode(self):
         linodeNode=self.linode.linode_list(LinodeID=self.linodeId)[0]
-        if not linodeNode['STATUS']:
+        if not linodeNode['STATUS'] == 1:
             print ("Linode is not running, so booting it up!")
             self.linode.linode_boot(LinodeID=self.linodeId,ConfigID=self.configId)
 
