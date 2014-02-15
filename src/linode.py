@@ -60,6 +60,7 @@ class Linode(object):
         print self.swapDiskId
         
     def _createConfigIfNotExist(self):
+        print ("Creating Monimus Default Config for %s with diskids %s %s"%(self.linodeId, self.rootDiskId, self.swapDiskId))
         self.configId=[c['ConfigID'] for c in  self.linode.linode_config_list(LinodeID=self.linodeId) if ('Monimus Default Config' in c['Label'])]
         if not self.configId:
             print "Configuration doesn't exists creating it"
@@ -83,6 +84,8 @@ class Linode(object):
         if not linodeNode['STATUS'] == 1:
             print ("Linode is not running, so booting it up!")
             self.linode.linode_boot(LinodeID=self.linodeId,ConfigID=self.configId)
+        else:
+            print ("Linode is already running")
 
     def create(self):
         self._createLinode()
