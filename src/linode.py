@@ -5,7 +5,6 @@ Created on Feb 13, 2014
 '''
 import api
 import ConfigParser
-from xapian import InvalidArgumentError
 import time
 
 class LinodeCreater(object):
@@ -29,7 +28,7 @@ class LinodeCreater(object):
         try:
             self.saLinode=Linode(self.linodeIdentifier)
             print "Linode exists continuing forward"
-        except InvalidArgumentError:
+        except LinodeError:
             print "Linode doesn't exists creating it" 
 #            self.linodeNode=self.linode.linode_create(DatacenterID=self.dallasDataCenterId, PlanID=self.planId, PaymentTerm=self.paymentTerm)
 #            self.linodeId=linodeNode['LinodeID']
@@ -102,7 +101,7 @@ class Linode(object):
         linodeNodes=[l for l in self.linode.linode_list() if (self.linodeIdentifier in l['LABEL'])]
         if not linodeNodes:
             print ("Linode doesn't exists for identifier %s"%(self.linodeIdentifier))
-            raise InvalidArgumentError("Linode doesn't exists for identifier %s"%(self.linodeIdentifier))
+            raise LinodeError("Linode doesn't exists for identifier %s"%(self.linodeIdentifier))
         self.linodeNode=linodeNodes[0]
     
     def getId(self):
@@ -146,7 +145,14 @@ class Linode(object):
     
     def refreshLinode(self):
         self._getLinode()
-        
+
+class LinodeError(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+    
+            
 if __name__ == "__main__":
     saLinode=LinodeCreater('bs2_monimus_com')
     saLinode.create()
