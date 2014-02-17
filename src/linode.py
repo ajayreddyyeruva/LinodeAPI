@@ -144,6 +144,17 @@ class Linode(object):
             rootDisk=rootDiskList[0]
         return rootDisk
             
+    def getSwapDisk(self):
+        swapDisk=None
+        swapDiskList=[d for d in  self.linode.linode_disk_list(LinodeID=self.getId()) if ('Swap Partition' in d['LABEL'])]
+        if swapDiskList:
+            swapDisk=swapDiskList[0]
+        return swapDisk
+    
+    def isRunning(self):
+        running = (self.linodeNode['STATUS'] == 1)
+        self.linode
+        return running
         
 if __name__ == "__main__":
     #saLinode=Linode('bs2_monimus_org')
