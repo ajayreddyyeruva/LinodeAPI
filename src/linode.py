@@ -130,7 +130,14 @@ class Linode(object):
         if rootDiskList:
             rootDisk=rootDiskList[0]
         return rootDisk
-            
+    
+    def getDefaultConfig(self):
+        defaultConfig=None
+        defaultConfigsList=[c for c in  self.linode.linode_config_list(LinodeID=self.getId()) if ('Monimus Default Config' in c['Label'])]
+        if defaultConfigsList:
+            defaultConfig=defaultConfigsList[0]        
+        return defaultConfig
+    
     def getSwapDisk(self):
         swapDisk=None
         swapDiskList=[d for d in  self.linode.linode_disk_list(LinodeID=self.getId()) if ('Swap Partition' in d['LABEL'])]
