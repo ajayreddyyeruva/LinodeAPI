@@ -130,13 +130,19 @@ class Linode(object):
     def getPublicIp(self):
         return [i['IPADDRESS'] for i in  self.linode.linode_ip_list(LinodeID=self.getId()) if (i['ISPUBLIC'])][0]
     
-    
     def getPrivateIp(self):
         privateIp=None
         privateIpList=[i['IPADDRESS'] for i in  self.linode.linode_ip_list(LinodeID=self.getId()) if (not i['ISPUBLIC'])]
         if privateIpList:
             privateIp=privateIpList[0]
         return privateIp
+
+    def getRootDisk(self):
+        rootDisk=None
+        rootDiskList=[d for d in  self.linode.linode_disk_list(LinodeID=self.getId()) if ('Root Partition' in d['LABEL'])]
+        if rootDiskList:
+            rootDisk=rootDiskList[0]
+        return rootDisk
             
         
 if __name__ == "__main__":
