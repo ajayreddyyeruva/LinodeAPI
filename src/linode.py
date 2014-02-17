@@ -108,12 +108,6 @@ class Linode(object):
         Constructor
         '''
         self.linodeIdentifier=linodeIdentifier
-        self.distributionId=[d['DISTRIBUTIONID'] for d in self.linode.avail_distributions() if (self.config.get('DEFAULT','UBUNTU_DIST') in d['LABEL']) and (d['IS64BIT'])][0]
-        print("Distribution id: %s"%(self.config.get('DEFAULT','UBUNTU_DIST')))
-        self.kernelId=[_['KERNELID'] for _ in self.linode.avail_kernels() if (self.config.get('DEFAULT','KERNEL_LABEL') in _['LABEL']) ][0]
-        self.dallasDataCenterId=[dc['DATACENTERID'] for dc in self.linode.avail_datacenters() if self.config.get('DEFAULT','DATACENTER_LABEL') in dc['LOCATION']][0]
-        self.planId=[p['PLANID'] for p in self.linode.avail_linodeplans() if self.config.get('DEFAULT','PLAN_ID') in p['LABEL']][0]
-        self.paymentTerm=1
         self._getLinode()
 
 
