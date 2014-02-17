@@ -45,14 +45,11 @@ class LinodeCreater(object):
         print self.saLinode.getRootDisk()['DISKID']
     
     def _createSwapDiskIfNotExist(self):
-        self.swapDiskId=[d['DISKID'] for d in  self.linode.linode_disk_list(LinodeID=self.linodeId) if ('Swap Partition' in d['LABEL'])]
-        if not self.swapDiskId:
+        if not self.saLinode.getSwapDisk():
             print "Swap disk doesn't exists creating 2 GB of it"
-            self.disk=self.linode.linode_disk_create(LinodeID=self.linodeId, Label='Swap Partition', Type='swap', Size=self.config.getint('DEFAULT', 'SWAP_DISK_SIZE'))
-            self.swapDiskId=self.disk['DiskID']
-        else:
-            self.swapDiskId=self.swapDiskId[0]
-        print self.swapDiskId
+            self.linode.linode_disk_create(LinodeID=self.saLinode.getId(), Label='Swap Partition', Type='swap', Size=self.config.getint('DEFAULT', 'SWAP_DISK_SIZE'))
+            self.saLinode.refreshLinode()
+        print self.saLinode.getSwapDisk()['DISKID']
         
     def _createConfigIfNotExist(self):
         print ("Creating Monimus Default Config for %s with diskids %s and %s"%(self.linodeId, self.rootDiskId, self.swapDiskId))
