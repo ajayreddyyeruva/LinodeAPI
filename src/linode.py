@@ -26,8 +26,7 @@ class LinodeCreater(object):
 
     def _createLinode(self):
         try:
-            self.linodeNode=Linode(self.linodeIdentifier)
-            self.linodeId=self.linodeNode.getId()
+            self.saLinode=Linode(self.linodeIdentifier)
             print "Linode exists continuing forward"
         except InvalidArgumentError:
             print "Linode doesn't exists creating it" 
@@ -36,7 +35,7 @@ class LinodeCreater(object):
 #            self.linode.linode_update(LinodeID=self.linodeId, Label=self.linodeIdentifier,lpm_displayGroup=self.config.get('DEFAULT','LINODE_GROUP'))
             
             
-#        print self.linodeId
+        print self.saLinode.getId()
     
     def _createRootDiskIfNotExist(self):
         self.rootDiskId=[d['DISKID'] for d in  self.linode.linode_disk_list(LinodeID=self.linodeId) if ('Root Partition' in d['LABEL'])]
