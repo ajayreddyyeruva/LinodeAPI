@@ -144,6 +144,9 @@ class Linode(object):
         running = (self.linodeNode['STATUS'] == 1)
         self.linode
         return running
+    
+    def refreshLinode(self):
+        self._getLinode()
         
 if __name__ == "__main__":
     #saLinode=Linode('bs2_monimus_org')
