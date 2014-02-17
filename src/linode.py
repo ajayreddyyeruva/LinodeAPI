@@ -33,7 +33,7 @@ class LinodeCreater(object):
             linodeNode=self.linode.linode_create(DatacenterID=self.dallasDataCenterId, PlanID=self.planId, PaymentTerm=self.paymentTerm)
             linodeId=linodeNode['LinodeID']
             self.linode.linode_update(LinodeID=linodeId, Label=self.linodeIdentifier,lpm_displayGroup=self.config.get('DEFAULT','LINODE_GROUP'))
-            self.saLinode.refreshLinode()
+            self.saLinode=Linode(self.linodeIdentifier)
         print self.saLinode.getId()
     
     def _createRootDiskIfNotExist(self):
