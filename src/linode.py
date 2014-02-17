@@ -60,13 +60,11 @@ class LinodeCreater(object):
         print self.saLinode.getDefaultConfig()['ConfigID']
 
     def _addPrivateIp(self):
-        self.pvtIpAddress=[i['IPADDRESS'] for i in  self.linode.linode_ip_list(LinodeID=self.linodeId) if (not i['ISPUBLIC'])]
-        if not self.pvtIpAddress:
+        if not self.saLinode.getPrivateIp():
             print "This machine doesn't have a private IP address adding a private IP"
-            self.pvtIpAddress=self.linode.linode_ip_addprivate(LinodeID=self.linodeId)
-        else:
-            self.pvtIpAddress=self.pvtIpAddress[0]
-        print self.pvtIpAddress
+            self.pvtIpAddress=self.linode.linode_ip_addprivate(LinodeID=self.saLinode.getId())
+            self.saLinode.refreshLinode()
+        print self.saLinode.getPrivateIp()
             
     def _bootLinode(self):
         linodeNode=self.linode.linode_list(LinodeID=self.linodeId)[0]
