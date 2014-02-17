@@ -131,6 +131,14 @@ class Linode(object):
         return [i['IPADDRESS'] for i in  self.linode.linode_ip_list(LinodeID=self.getId()) if (i['ISPUBLIC'])][0]
     
     
+    def getPrivateIp(self):
+        privateIp=None
+        privateIpList=[i['IPADDRESS'] for i in  self.linode.linode_ip_list(LinodeID=self.getId()) if (not i['ISPUBLIC'])]
+        if privateIpList:
+            privateIp=privateIpList[0]
+        return privateIp
+            
+        
 if __name__ == "__main__":
     #saLinode=Linode('bs2_monimus_org')
     #saLinode.create()
