@@ -6,6 +6,7 @@ Created on Feb 13, 2014
 import api
 import ConfigParser
 from xapian import InvalidArgumentError
+import time
 
 class LinodeCreater(object):
     config = ConfigParser.ConfigParser()
@@ -67,10 +68,11 @@ class LinodeCreater(object):
         print self.saLinode.getPrivateIp()
             
     def _bootLinode(self):
-        linodeNode=self.linode.linode_list(LinodeID=self.linodeId)[0]
-        if not linodeNode['STATUS'] == 1:
+        if not self.saLinode.isRunning():
             print ("Linode is not running, so booting it up!")
-            self.linode.linode_boot(LinodeID=self.linodeId,ConfigID=self.configId)
+            self.linode.linode_boot(LinodeID=self.saLinode.getId(),ConfigID=self.saLinode.getDefaultConfig()['ConfigID'])
+            time.sleep(60)
+            self.saLinode.refreshLinode()
         else:
             print ("Linode is already running")
 
