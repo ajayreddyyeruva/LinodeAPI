@@ -127,6 +127,8 @@ class Linode(object):
     def getId(self):
         return self.linodeNode['LINODEID']
     
+    def getPublicIp(self):
+        return [i['IPADDRESS'] for i in  self.linode.linode_ip_list(LinodeID=self.getId()) if (i['ISPUBLIC'])][0]
     
     
 if __name__ == "__main__":
