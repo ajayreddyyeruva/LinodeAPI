@@ -34,8 +34,6 @@ class LinodeCreater(object):
 #            self.linodeNode=self.linode.linode_create(DatacenterID=self.dallasDataCenterId, PlanID=self.planId, PaymentTerm=self.paymentTerm)
 #            self.linodeId=linodeNode['LinodeID']
 #            self.linode.linode_update(LinodeID=self.linodeId, Label=self.linodeIdentifier,lpm_displayGroup=self.config.get('DEFAULT','LINODE_GROUP'))
-            
-            
         print self.saLinode.getId()
     
     def _createRootDiskIfNotExist(self):
@@ -150,7 +148,5 @@ class Linode(object):
         self._getLinode()
         
 if __name__ == "__main__":
-    #saLinode=Linode('bs2_monimus_org')
-    #saLinode.create()
     saLinode=LinodeCreater('bs2_monimus_com')
-    saLinode._createLinode()
+    saLinode.create()
