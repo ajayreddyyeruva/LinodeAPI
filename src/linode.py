@@ -38,14 +38,10 @@ class LinodeCreater(object):
         print self.saLinode.getId()
     
     def _createRootDiskIfNotExist(self):
-        self.rootDiskId=[d['DISKID'] for d in  self.linode.linode_disk_list(LinodeID=self.linodeId) if ('Root Partition' in d['LABEL'])]
-        if not self.rootDiskId:
+        if not self.saLinode.getRootDisk():
             print "Root disk doesn't exists creating 20 GB of it"
-            self.disk=self.linode.linode_disk_createfromdistribution(LinodeID=self.linodeId, DistributionID=self.distributionId, Label='Root Partition', Size=(self.config.getint('DEFAULT', 'ROOT_DISK_SIZE')), rootPass=self.config.get('DEFAULT','ROOT_PWD'),rootSSHKey=open(self.config.get('DEFAULT','ROOT_SSH_KEY')).read())
-            self.rootDiskId=self.disk['DiskID']
-        else:
-            self.rootDiskId=self.rootDiskId[0]
-        print self.rootDiskId
+            self.linode.linode_disk_createfromdistribution(LinodeID=self.linodeId, DistributionID=self.distributionId, Label='Root Partition', Size=(self.config.getint('DEFAULT', 'ROOT_DISK_SIZE')), rootPass=self.config.get('DEFAULT','ROOT_PWD'),rootSSHKey=open(self.config.get('DEFAULT','ROOT_SSH_KEY')).read())
+        print self.saLinode.getRootDisk()['DISKID']
     
     def _createSwapDiskIfNotExist(self):
         self.swapDiskId=[d['DISKID'] for d in  self.linode.linode_disk_list(LinodeID=self.linodeId) if ('Swap Partition' in d['LABEL'])]
