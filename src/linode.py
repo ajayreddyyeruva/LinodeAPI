@@ -5,15 +5,13 @@ Created on Feb 13, 2014
 '''
 import api
 import ConfigParser
+from xapian import InvalidArgumentError
 
-class Linode(object):
-    '''
-    classdocs
-    '''
+class LinodeCreater(object):
     config = ConfigParser.ConfigParser()
     config.read('/data/linode/linode.properties')
     linode = api.Api(config.get('DEFAULT','LINODE_API'))
-
+    
     def __init__(self, linodeIdentifier):
         '''
         Constructor
@@ -27,17 +25,18 @@ class Linode(object):
         self.paymentTerm=1
 
     def _createLinode(self):
-        self.linodeId=[l['LINODEID'] for l in  self.linode.linode_list() if (self.linodeIdentifier in l['LABEL'])]
-        if not self.linodeId:
-            print "Lindoe doesn't exists. Creating it"
-            linodeNode=self.linode.linode_create(DatacenterID=self.dallasDataCenterId, PlanID=self.planId, PaymentTerm=self.paymentTerm)
-            self.linodeId=linodeNode['LinodeID']
-            self.linode.linode_update(LinodeID=self.linodeId, Label=self.linodeIdentifier,lpm_displayGroup=self.config.get('DEFAULT','LINODE_GROUP'))
-        else:
-            self.linodeId=self.linodeId[0]
+        try:
+            self.linodeNode=Linode(self.linodeIdentifier)
+            self.linodeId=self.linodeNode.getId()
+            print "Linode exists continuing forward"
+        except InvalidArgumentError:
+            print "Linode doesn't exists creating it" 
+#            self.linodeNode=self.linode.linode_create(DatacenterID=self.dallasDataCenterId, PlanID=self.planId, PaymentTerm=self.paymentTerm)
+#            self.linodeId=linodeNode['LinodeID']
+#            self.linode.linode_update(LinodeID=self.linodeId, Label=self.linodeIdentifier,lpm_displayGroup=self.config.get('DEFAULT','LINODE_GROUP'))
             
             
-        print self.linodeId
+#        print self.linodeId
     
     def _createRootDiskIfNotExist(self):
         self.rootDiskId=[d['DISKID'] for d in  self.linode.linode_disk_list(LinodeID=self.linodeId) if ('Root Partition' in d['LABEL'])]
@@ -70,7 +69,7 @@ class Linode(object):
         else:
             self.configId=self.configId[0]
         print self.configId
-    
+
     def _addPrivateIp(self):
         self.pvtIpAddress=[i['IPADDRESS'] for i in  self.linode.linode_ip_list(LinodeID=self.linodeId) if (not i['ISPUBLIC'])]
         if not self.pvtIpAddress:
@@ -95,7 +94,43 @@ class Linode(object):
         self._createConfigIfNotExist()
         self._addPrivateIp()
         self._bootLinode()
+
+class Linode(object):
+    '''
+    classdocs
+    '''
+    config = ConfigParser.ConfigParser()
+    config.read('/data/linode/linode.properties')
+    linode = api.Api(config.get('DEFAULT','LINODE_API'))
+
+    def __init__(self, linodeIdentifier):
+        '''
+        Constructor
+        '''
+        self.linodeIdentifier=linodeIdentifier
+        self.distributionId=[d['DISTRIBUTIONID'] for d in self.linode.avail_distributions() if (self.config.get('DEFAULT','UBUNTU_DIST') in d['LABEL']) and (d['IS64BIT'])][0]
+        print("Distribution id: %s"%(self.config.get('DEFAULT','UBUNTU_DIST')))
+        self.kernelId=[_['KERNELID'] for _ in self.linode.avail_kernels() if (self.config.get('DEFAULT','KERNEL_LABEL') in _['LABEL']) ][0]
+        self.dallasDataCenterId=[dc['DATACENTERID'] for dc in self.linode.avail_datacenters() if self.config.get('DEFAULT','DATACENTER_LABEL') in dc['LOCATION']][0]
+        self.planId=[p['PLANID'] for p in self.linode.avail_linodeplans() if self.config.get('DEFAULT','PLAN_ID') in p['LABEL']][0]
+        self.paymentTerm=1
+        self._getLinode()
+
+
+    def _getLinode(self):
+        linodeNodes=[l for l in self.linode.linode_list() if (self.linodeIdentifier in l['LABEL'])]
+        if not linodeNodes:
+            print ("Linode doesn't exists for identifier %s"%(self.linodeIdentifier))
+            raise InvalidArgumentError("Linode doesn't exists for identifier %s"%(self.linodeIdentifier))
+        self.linodeNode=linodeNodes[0]
+    
+    def getId(self):
+        return self.linodeNode['LINODEID']
+    
+    
     
 if __name__ == "__main__":
-    saLinode=Linode('bs2_monimus_org')
-    saLinode.create()
+    #saLinode=Linode('bs2_monimus_org')
+    #saLinode.create()
+    saLinode=LinodeCreater('bs2_monimus_com')
+    saLinode._createLinode()
